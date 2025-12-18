@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天才小玲酱同学生日快乐</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'FZMiaoWu', '微软雅黑', Arial, sans-serif;
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        @font-face {
+            font-family: 'FZMiaoWu';
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/fangzheng-miaowu@1.0.0/FZMiaoWu-Regular.ttf');
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 图片轮播样式 */
+        .slideshow {
+            display: none;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* 祝福内容样式 */
+        .message-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            /* 移除了背景图片 */
+            background-color: transparent;
+            z-index: 10;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .message {
+            font-size: 20px;
+            color: #8b008b;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            font-family: 'FZMiaoWu', '微软雅黑', Arial, sans-serif;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 90%;
+        }
+
+        .cake {
+            font-size: 60px;
+            animation: bounce 2s infinite;
+            margin-top: 20px;
+        }
+
+        /* 按钮样式 */
+        .start-button {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: linear-gradient(to right, #ff66cc, #ff99cc);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 5;
+            display: none;
+            font-family: 'FZMiaoWu', '微软雅黑', Arial, sans-serif;
+            border: 3px solid #ffb6c1;
+            box-shadow: 0 0 15px #ff66cc;
+        }
+
+        .start-button:hover {
+            background: linear-gradient(to right, #ff33bb, #ff66cc);
+        }
+
+        /* 烟花效果 */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 10px 2px currentColor;
+            filter: blur(1px);
+        }
+        
+        /* 迪士尼风格烟花核心 */
+        .firework-core {
+            position: absolute;
+            width: 5px;
+            height: 20px;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 10px 2px #ffffff;
+            z-index: 15;
+        }
+        
+        /* 迪士尼风格烟花粒子 */
+        .firework-particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        /* 迪士尼风格烟花闪光 */
+        .firework-flash {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 14;
+        }
+        
+        /* 迪士尼风格烟花容器 */
+        .disney-fireworks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        /* 生日祝福文本 */
+        .birthday-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'FZMiaoWu', '微软雅黑', Arial, sans-serif;
+            font-size: 48px;
+            color: #fff;
+            text-shadow: 0 0 10px #00f7ff, 0 0 20px #00f7ff, 0 0 30px #00f7ff;
+            opacity: 0;
+            z-index: 20;
+            pointer-events: none;
+            transition: opacity 2s ease-in-out;
+        }
+        
+        .birthday-text.show {
+            opacity: 1;
+        }
+
+        /* 动画 */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 图片轮播 -->
+        <div class="slideshow" id="slideshow">
+            <div class="slide active">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG899.jpg" alt="生日快乐1">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG900.jpg" alt="生日快乐2">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG901.jpg" alt="生日快乐3">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG902.jpg" alt="生日快乐4">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG903.jpg" alt="生日快乐5">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG904.jpg" alt="生日快乐6">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG905.jpg" alt="生日快乐7">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG906.jpg" alt="生日快乐8">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG907.jpg" alt="生日快乐9">
+            </div>
+            <div class="slide">
+                <img src="https://gitee.com/like_long/pic/raw/master/WechatIMG908.jpg" alt="生日快乐10">
+            </div>
+        </div>
+
+        <!-- 开始按钮 -->
+        <button class="start-button" id="startButton">致亲爱的小玲同学</button>
+
+        <!-- 祝福信息 -->
+        <div class="message-container" id="messageContainer">
+            <div class="message" id="message"></div>
+            <div class="cake">🎂</div>
+        </div>
+        
+        <!-- 迪士尼烟花容器 -->
+        <div class="disney-fireworks" id="disneyFireworks"></div>
+        
+        <!-- 生日祝福文本 -->
+        <div class="birthday-text" id="birthdayText"></div>
+    </div>
+
+    <!-- 音频元素 -->
+    <audio id="bgMusic" loop>
+        <source src="juzipi.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <script>
+        // 页面加载完成后自动播放音乐
+        window.addEventListener('load', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            
+            // 尝试自动播放
+            const playPromise = bgMusic.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // 自动播放成功
+                    console.log("音乐开始播放");
+                }).catch(error => {
+                    // 自动播放失败，需要用户交互
+                    console.log("自动播放失败，需要用户交互: ", error);
+                    
+                    // 创建一个提示元素
+                    const playHint = document.createElement('div');
+                    playHint.innerHTML = '🎵 点击页面播放音乐';
+                    playHint.style.position = 'fixed';
+                    playHint.style.top = '20px';
+                    playHint.style.left = '50%';
+                    playHint.style.transform = 'translateX(-50%)';
+                    playHint.style.padding = '10px 20px';
+                    playHint.style.background = '#ff66cc';
+                    playHint.style.color = 'white';
+                    playHint.style.borderRadius = '30px';
+                    playHint.style.zIndex = '1000';
+                    playHint.style.cursor = 'pointer';
+                    playHint.style.fontFamily = "'FZMiaoWu', '微软雅黑', Arial, sans-serif";
+                    document.body.appendChild(playHint);
+                    
+                    // 添加点击事件
+                    const playAudio = function() {
+                        bgMusic.play();
+                        playHint.remove();
+                        document.body.removeEventListener('click', playAudio);
+                    };
+                    
+                    playHint.addEventListener('click', playAudio);
+                    document.body.addEventListener('click', playAudio, {once: true});
+                });
+            }
+            
+            // 显示图片轮播
+            document.querySelector('.slideshow').style.display = 'block';
+            
+            // 开始图片轮播
+            startSlideshow();
+        });
+
+        // 图片轮播函数
+        function startSlideshow() {
+            let currentIndex = 0;
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+            const startButton = document.getElementById('startButton');
+            
+            // 每5秒切换一张图片
+            const slideInterval = setInterval(() => {
+                // 移除当前活动状态
+                slides[currentIndex].classList.remove('active');
+                
+                // 计算下一张图片索引
+                currentIndex = (currentIndex + 1) % totalSlides;
+                
+                // 添加新的活动状态
+                slides[currentIndex].classList.add('active');
+                
+                // 如果是最后一张图片，显示按钮
+                if (currentIndex === totalSlides - 1) {
+                    setTimeout(() => {
+                        startButton.style.display = 'block';
+                        startButton.classList.add('fade-in');
+                    }, 1000);
+                    clearInterval(slideInterval);
+                }
+            }, 5000);
+        }
+
+        // 按钮点击事件
+        document.getElementById('startButton').addEventListener('click', function() {
+            // 隐藏图片轮播和按钮
+            document.querySelector('.slideshow').style.display = 'none';
+            this.style.display = 'none';
+            
+            // 显示祝福信息
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.style.display = 'flex';
+            
+            // 创建迪士尼风格烟花效果
+            createDisneyFireworks();
+            
+            // 显示生日祝福文本
+            // 已删除相关内容
+            
+            // 显示祝福语
+            showMessages();
+        });
+
+        // 祝福语列表
+        const messages = [
+            "今天是12月18日",
+            "祝我们温柔可爱淘气美丽的小玲同学生日快乐!",
+            "喜欢这份生日礼物嘛？",
+            "这对龙老师来说",
+            "完全没有压力好吧",
+            "简简单单",
+            "只需略动小手",
+            "什么？你问为什么是这首歌",
+            "很简单啊",
+            "你网易云歌单喜欢的只有这首歌",
+            "一选一，这我还会选错？",
+            "这简直是送分题好吧",
+            "回想11月15日",
+            "我们在海岛“逮路人”时无意相遇",
+            "这大概就是冥冥之中的缘分吧",
+            "从那以后，每天开开心心带你马踏度假岛",
+            "巧合的是，我们都爱看豆瓣高分剧",
+            "而且片单“完美互斥”——交集几乎为零",
+            "并集却刚好覆盖了榜单前排",
+            "笑死",
+            "我们一起看了《盗梦空间》、《白日梦想家》、《All Her Fault》和《怪奇物语》",
+            "这段时光很快乐",
+            "这里要批评一下某人洗澡拖延症",
+            "每次都让龙老师等得快睡着了",
+            "以前我睡眠不好，总要靠褪黑素熬到两点多",
+            "现在不吃褪黑素看完剧就能秒睡",
+            "You are my medicine",
+            "希望以后有机会",
+            "我们能一起体验更多新奇好玩的事物。",
+            "ok",
+            "废话说得有点多了",
+            "该说最重要的事了",
+            "祝",
+            "聪明可爱机智善良",
+            "勇敢无畏天生丽质",
+            "霸气侧漏邪感狂拽",
+            "智商超群极具然力",
+            "温文尔雅风度翩翩",
+            "彬彬有礼天下无双",
+            "眉清日秀吹弹可破",
+            "人面桃花英俊潇洒",
+            "气宇不凡玉树临风",
+            "仪表堂堂风流倜傥",
+            "面如冠玉风度翩翩",
+            "美目盼兮清新俊逸酷到爆的",
+            "天才小玲酱同学",
+            "生日快乐！！！",
+            "每天都要开开心心哦",
+            "---龙老师"
+
+
+
+            // "亲爱的小玲同学：",
+            // "生日快乐！🎂",
+            // "在这个特别的日子里，",
+            // "我想对你说声谢谢，",
+            // "谢谢你一直以来的陪伴和支持。",
+            // "你的笑容如阳光般温暖，",
+            // "照亮了我生活中的每一天。",
+            // "愿你的每一天都像今天一样美好，",
+            // "愿你的每一个梦想都能实现。",
+            // "愿你永远保持那份纯真与善良，",
+            // "愿你被世界温柔以待。",
+            // "祝你身体健康，学习进步，",
+            // "工作顺利，心想事成！",
+            // "再次祝你生日快乐！🎉",
+            // "愿我们的友谊天长地久！💕"
+        ];
+
+        // 显示祝福语函数
+        function showMessages() {
+            const messageElement = document.getElementById('message');
+            let index = 0;
+            
+            function displayNextMessage() {
+                if (index < messages.length) {
+                    messageElement.innerHTML = messages[index];
+                    messageElement.classList.add('fade-in');
+                    
+                    index++;
+                    setTimeout(displayNextMessage, 3000); // 每3秒显示一条消息
+                }
+            }
+            
+            displayNextMessage();
+        }
+
+        // 创建迪士尼风格烟花效果
+        function createDisneyFireworks() {
+            // 初始化画布
+            const container = document.getElementById('disneyFireworks');
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            container.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            let cw = window.innerWidth;
+            let ch = window.innerHeight;
+            let fireworks = [];
+            let particles = [];
+            // 核心修改：基础色相改为330（粉红色），不再是随机
+            let baseHue = 330; 
+            let limiterTotal = 5;
+            let limiterTick = 0;
+            let timerTotal = 80;
+            let timerTick = 0;
+            let mousedown = false;
+            let mx, my;
+            
+            window.addEventListener('resize', function() {
+                cw = window.innerWidth;
+                ch = window.innerHeight;
+                canvas.width = cw;
+                canvas.height = ch;
+            });
+            
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+            
+            function calculateDistance(p1x, p1y, p2x, p2y) {
+                return Math.sqrt(Math.pow(p1x - p2x, 2) + Math.pow(p1y - p2y, 2));
+            }
+            
+            class Firework {
+                constructor(sx, sy, tx, ty) {
+                    this.x = sx;
+                    this.y = sy;
+                    this.sx = sx;
+                    this.sy = sy;
+                    this.tx = tx;
+                    this.ty = ty;
+                    this.distanceToTarget = calculateDistance(sx, sy, tx, ty);
+                    this.distanceTraveled = 0;
+                    this.coordinates = [];
+                    this.coordinateCount = 3;
+                    while(this.coordinateCount--) {
+                        this.coordinates.push([this.x, this.y]);
+                    }
+                    this.angle = Math.atan2(ty - sy, tx - sx);
+                    this.speed = 2;
+                    this.acceleration = 1.05;
+                    this.brightness = random(60, 80); // 稍微调亮一点
+                    this.targetRadius = 1;
+                    // 烟花升空时的颜色：粉色或金色
+                    this.hue = Math.random() < 0.5 ? 330 : 45; 
+                }
+            
+                update(index) {
+                    this.coordinates.pop();
+                    this.coordinates.unshift([this.x, this.y]);
+            
+                    if(this.targetRadius < 8) {
+                        this.targetRadius += 0.3;
+                    } else {
+                        this.targetRadius = 1;
+                    }
+            
+                    this.speed *= this.acceleration;
+                    let vx = Math.cos(this.angle) * this.speed;
+                    let vy = Math.sin(this.angle) * this.speed;
+                    this.distanceTraveled = calculateDistance(this.sx, this.sy, this.x + vx, this.y + vy);
+            
+                    if(this.distanceTraveled >= this.distanceToTarget) {
+                        // 增加爱心出现的概率到 40%
+                        let shape = Math.random() < 0.4 ? 'heart' : 'circle';
+                        createParticles(this.tx, this.ty, shape);
+                        fireworks.splice(index, 1);
+                    } else {
+                        this.x += vx;
+                        this.y += vy;
+                    }
+                }
+            
+                draw() {
+                    ctx.beginPath();
+                    ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.strokeStyle = 'hsl(' + this.hue + ', 100%, ' + this.brightness + '%)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.arc(this.tx, this.ty, this.targetRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            
+            class Particle {
+                constructor(x, y, type) {
+                    this.x = x;
+                    this.y = y;
+                    this.coordinates = [];
+                    this.coordinateCount = 5;
+                    while(this.coordinateCount--) {
+                        this.coordinates.push([this.x, this.y]);
+                    }
+                    
+                    // === 核心颜色控制逻辑 ===
+                    if (type === 'heart') {
+                        // 爱心强制为：热粉色(330) 或 正红色(350)
+                        this.hue = random(330, 350); 
+                        this.brightness = random(60, 90); // 亮一点
+                    } else {
+                        // 普通圆形烟花：在粉色(320)、紫色(280)、暖金(40)之间随机
+                        // 这样配色会非常高级且可爱
+                        let colorType = Math.random();
+                        if (colorType < 0.6) {
+                            this.hue = random(300, 340); // 60% 概率是粉色系
+                        } else if (colorType < 0.8) {
+                            this.hue = random(260, 290); // 20% 概率是梦幻紫色
+                        } else {
+                            this.hue = random(40, 50);   // 20% 概率是闪亮金色
+                        }
+                        this.brightness = random(50, 80);
+                    }
+            
+                    this.alpha = 1;
+                    this.decay = random(0.01, 0.025); // 稍微减慢消失速度，更梦幻
+            
+                    if (type === 'heart') {
+                        let angle = random(0, Math.PI * 2);
+                        let force = random(0.5, 3.5);
+                        let heartX = 16 * Math.pow(Math.sin(angle), 3);
+                        let heartY = -(13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle));
+                        
+                        this.vx = (heartX / 10) * force;
+                        this.vy = (heartY / 10) * force;
+                        this.friction = 0.96;
+                        this.gravity = 0.05;
+                    } else {
+                        this.angle = random(0, Math.PI * 2);
+                        this.speed = random(1, 10);
+                        this.friction = 0.95;
+                        this.gravity = 1;
+                        this.vx = Math.cos(this.angle) * this.speed;
+                        this.vy = Math.sin(this.angle) * this.speed;
+                    }
+                }
+            
+                update(index) {
+                    this.coordinates.pop();
+                    this.coordinates.unshift([this.x, this.y]);
+                    this.vx *= this.friction;
+                    this.vy *= this.friction;
+                    this.vy += this.gravity;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.alpha -= this.decay;
+            
+                    if(this.alpha <= this.decay) {
+                        particles.splice(index, 1);
+                    }
+                }
+            
+                draw() {
+                    ctx.beginPath();
+                    ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+                    ctx.lineTo(this.x, this.y);
+                    ctx.strokeStyle = 'hsla(' + this.hue + ', 100%, ' + this.brightness + '%, ' + this.alpha + ')';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            function createParticles(x, y, shape) {
+                let particleCount = shape === 'heart' ? 60 : 100;
+                while(particleCount--) {
+                    particles.push(new Particle(x, y, shape));
+                }
+            }
+            
+            function loop() {
+                requestAnimationFrame(loop);
+            
+                // 拖尾背景色也改为极淡的紫黑色，让粉色更显眼
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(0, 0, cw, ch);
+                
+                ctx.globalCompositeOperation = 'lighter';
+            
+                var i = fireworks.length;
+                while(i--) {
+                    fireworks[i].draw();
+                    fireworks[i].update(i);
+                }
+            
+                var i = particles.length;
+                while(i--) {
+                    particles[i].draw();
+                    particles[i].update(i);
+                }
+            
+                if(timerTick >= timerTotal) {
+                    if(!mousedown) {
+                        fireworks.push(new Firework(cw / 2, ch, random(0, cw), random(0, ch / 2)));
+                        timerTick = 0;
+                    }
+                } else {
+                    timerTick++;
+                }
+            
+                if(limiterTick >= limiterTotal) {
+                    if(mousedown) {
+                        fireworks.push(new Firework(cw / 2, ch, mx, my));
+                        limiterTick = 0;
+                    }
+                } else {
+                    limiterTick++;
+                }
+            }
+            
+            canvas.addEventListener('mousemove', function(e) {
+                mx = e.clientX;
+                my = e.clientY;
+            });
+            
+            canvas.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                mousedown = true;
+            });
+            
+            canvas.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                mousedown = false;
+            });
+            
+            // 开始动画循环
+            loop();
+        }
+    </script>
+</body>
+</html>
